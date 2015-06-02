@@ -136,7 +136,7 @@ class Xraybox:
         ('null'              , 0x00 , 0) )
 
     def __init__(self, iPort="/dev/ttyUSB0", commtime=0.1):
-        """Initiate the XR-40 box"""
+        """Initiate the XR-40 box, by default through /dev/ttyUSB0"""
         if os.path.exists(iPort):
             self._usbserial = serial.Serial(
                 port=iPort,
@@ -147,8 +147,13 @@ class Xraybox:
                 timeout=1)
         else:
             print """ERROR\t\t: '{0}' doesn't exist!""".format(iPort)
+            print """Find correct TTY from 'dmesg', product id should be 0xa304"""
+            print """If TTY exists and the script doesn't work, try following command:"""
+            print """    sudo modprobe ftdi_sio"""
+            print """    sudo sh -c 'echo 0403 a304 > /sys/bus/usb-serial/drivers/ftdi_sio/new_id'"""
             sys.exit(1)
         self.commtime = commtime
+        self.previousStepStatus = 0
         self._measureStatus = 0
 
     def getHWversion(self):
@@ -215,6 +220,7 @@ class Xraybox:
         if iStatus == -1 or iniStatus != iStatus:
             self._send(self._interpret(11,(iniStatus+1)%2))
             if not self._isCmdOk("""ERROR\t\t: Got some error in setLight, status unchanged."""):
+                self.previousStepStatus = 1
                 sys.exit(1)
 
     def setSpeaker(self, iStatus=-1):
@@ -223,20 +229,23 @@ class Xraybox:
         if iStatus == -1 or iniStatus != iStatus:
             self._send(self._interpret(12,(iniStatus+1)%2))
             if not self._isCmdOk("""ERROR\t\t: Got some error in setSpeaker, status unchenged."""):
+                self.previousStepStatus = 1
                 sys.exit(1)
 
     def setXray(self, iStatus):
         """setXray 0(off)/1(on)/-1(switch)"""
         if self.getDoor() != 1:
             print """WARNING\t\t: Unable to switch Xray on with door UNLOCKED."""
+            self.previousStepStatus = 1
             return
         else:
             self._send(self._interpret(10,iStatus))
-            if not self._isCmdOk("""WARNING\t\t: Xray could be at the wanteds already."""):
+            if not self._isCmdOk("""WARNING\t\t: Xray could be at the wanted state already."""):
                 self._send(self._interpret(10,(iStatus+1)%2))
                 self._read()
                 self._send(self._interpret(10,iStatus))
                 if not self._isCmdOk("""ERROR\t\t: Got some error in setXray."""):
+                    self.previousStepStatus = 1
                     sys.exit(1)
 
     def setCurrent(self, iCur=20):
@@ -247,6 +256,7 @@ class Xraybox:
             self.setXray(0)
             self._send(self._interpret(3,iCur,4))
             if not self._isCmdOk("""ERROR\t\t: Got some error in setCurrent"""):
+                self.previousStepStatus = 1
                 return
 
     def setHV(self, iHV=350):
@@ -257,6 +267,7 @@ class Xraybox:
             self.setXray(0)
             self._send(self._interpret(3,iHV,3))
             if not self._isCmdOk("""ERROR\t\t: Got some error in setHV"""):
+                self.previousStepStatus = 1
                 sys.exit(1)
 
     def setGMVoltage(self, iGMV=500): #RS set to 400
@@ -267,13 +278,15 @@ class Xraybox:
             self.setXray(0)
             self._send(self._interpret(3,iGMV,16))
             if not self._isCmdOk("""ERROR\t\t: You got some error in setGMVoltage"""):
+                self.previousStepStatus = 1
                 sys.exit(1)
 
     def setGMGate(self, iGate=10):
-        """setGMGate 0~1000[0.1 second]"""
+        """setGMGate 0~1000[0.1 second] - Time interval between steps """
         if 1000 >= iGate >= 5:
             self._send(self._interpret(3,iGate,17))
             if not self._isCmdOk("""ERROR\t\t: You got some error in setGMGate"""):
+                self.previousStepStatus = 1
                 sys.exit(1)
 
     def gonioAutoCali(self):
@@ -281,6 +294,7 @@ class Xraybox:
         self._send(self._interpret(13))
         time.sleep(2)
         if not self._isCmdOk("""ERROR\t\t: You got some error in gonioAutoCali"""):
+            self.previousStepStatus = 1
             sys.exit(1)
         else:
             print """INFO\t\t: Goniometer auto-calibration done."""
@@ -291,10 +305,12 @@ class Xraybox:
         if 3 > iMode > 0 and oBytes[3] != iMode:
             self._send(self._interpret(3,iMode,22))
             if not self._isCmdOk("""ERROR\t\t: You got some error in setGonio:iMode."""):
+                self.previousStepStatus = 1
                 sys.exit(1)
         if 3600 > iStart >= 0:
             self._send(self._interpret(3,iStart,11))
             if not self._isCmdOk("""ERROR\t\t: You got some error in setGonio:iStart."""):
+                self.previousStepStatus = 1
                 sys.exit(1)
         if 3600 > iStop >= 0:
             if self._hex2dec(self._getDevStatus(22)) == 1 and iStop >= 1800:
@@ -305,14 +321,17 @@ class Xraybox:
                 print """INFO\t\t: Stop angle beyond limit, reset to allowed maximum""", iStop
             self._send(self._interpret(3,iStop,12))
             if not self._isCmdOk("""ERROR\t\t: You got some error in setGonio:iStop."""):
+                self.previousStepStatus = 1
                 sys.exit(1)
         if 100 >= iStep > 0:
             self._send(self._interpret(3,iStep,14))
             if not self._isCmdOk("""ERROR\t\t: You got some error in setGonio:iStep."""):
+                self.previousStepStatus = 1
                 sys.exit(1)
         if 1000 >= iGateTime >= 5:
             self._send(self._interpret(3,iGateTime,17))
             if not self._isCmdOk("""ERROR\t\t: You got some error in setGonio:iGateTime"""):
+                self.previousStepStatus = 1
                 sys.exit(1)
 
     def getSingleValue(self):
@@ -332,6 +351,7 @@ class Xraybox:
             self.setGMGate(iGateTime)
         else:
             print """ERROR\t\t: You should set gonioMode to 1(fixed crystal) or 2(fixed detector)."""
+            self.previousStepStatus = 1
             return
 
     def startRun(self, iStatus):
@@ -363,6 +383,7 @@ class Xraybox:
                 return output
             else:
                 print """ERROR\t\t: Unexpected readout""", notStop, """in _getValues()"""
+                self.previousStepStatus = 1
                 sys.exit(1)
 
     def resetAll(self):
@@ -405,6 +426,7 @@ class Xraybox:
             while True:
                 if time.time() > timeout:
                     print "ERROR\t\t: Timeout(120s) reading value. Exit."
+                    self.previousStepStatus = 1
                     sys.exit(1)
                 oBytes = [format(int(ord(i)),'#04x')for i in self._usbserial.read(2)] #Head
                 if len(oBytes) > 0:
@@ -415,6 +437,7 @@ class Xraybox:
                 return oBytes
             else:
                 print """ERROR\t\t: Something wrong in reading values.""", oBytes
+                self.previousStepStatus = 1;
 
     def _getDevStatus(self, iDevID):
         self._send(self._interpret(modeID=4,devID=iDevID))
@@ -446,6 +469,9 @@ def main():
         # Interactive mode
         print """Control X-ray box in interactive mode. Get help by 'help' method."""
 
+        # Extend special methods for interactive mode
+        xmethods.extend(('createSampleScript'))
+
         ### Initialize the box.
         iPort = raw_input('Please input the location of ttyUSB (empty=/dev/ttyUSB0): ')
         if iPort == '':
@@ -458,6 +484,21 @@ def main():
                 printHelp(xmethods)
             elif cmd[0] == 'quit':
                 sys.exit(0)
+            elif cmd[0] == 'createSampleScript':
+                print """Creating sampleScript for Scripter mode......"""
+                fout = open("sampleScript","w")
+                sampleScriptContent = """\
+/dev/ttyUSB0
+#Put the TTY your device is on at the first line
+#Comments start with '#', empty lines are ignored.
+setLight 1
+external echo "Trun on light for 10 sec";sleep 10
+setLight 0
+quit\
+"""
+                fout.write(sampleScriptContent)
+                fout.close()
+                print """Done! 'sampleScript' is produced."""
             elif cmd[0] in xmethods:
                 if len(cmd) == 1:
                     if getattr(xr40,cmd[0]).__doc__ != None:
@@ -476,7 +517,7 @@ def main():
     elif sys.argv[1] == '--help' or sys.argv[1] == '-h':
         printHelp()
     elif len(sys.argv) == 2:
-        ### File input mode
+        ### Script mode
         if os.path.exists(sys.argv[1]):
             f = open(sys.argv[1],"r")
 
@@ -510,6 +551,9 @@ def main():
                         getattr(xr40,cmd[0])(*[int(x) for x in cmd[1:]])
                 else:
                     print """INFO\t\t: Unknown method:\"{0}\".""".format(' '.join(cmd))
+                if xr40.previousStepStatus != 0 : # Stop the program when something went wrong.
+                    print """ERROR\t\t: Something went wrong in this step. Program terminates."""
+                    break
 
             f.close()
         else:
@@ -520,11 +564,17 @@ def main():
 def printHelp(methodlist):
     print """\
 Help:
-    \tAvailable methods can be found in the list below.
+    \tGet control with Phywe XR-40 X-ray box.
+    \tAvailable methods can be found in the list at the end.
     \tAppend arguments, if needed, after the method name and separate by space.
     \tInstructions are given when running a method with no arguments.
     \t
-    \tTry contact me if there's any problem. - mailto:po-hsun.chen@cern.ch
+    \tTwo modes are provided:
+    \t    Interactive mode by './xraybox.py'
+    \t    Script      mode by './xraybox.py YOURSCRIPT'
+    \t        Example script can be produced in interactive mode.
+    \t
+    \tContact me if there's any problem. - mailto:po-hsun.chen@cern.ch
 """
     print "List of methods:\n", methodlist
 

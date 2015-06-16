@@ -15,5 +15,6 @@ A:	Since the product id is not registered properly and the kernel module does no
 
 Q:  How to find which TTY is the X-ray box on?  
 A:  Make sure the kernel module is loaded properly first.  
-    Then find it using 'dmesg | grep a304 -A20 -B20'  
+    Then find it using 'dmesg | grep a304 -A20 -B20'
+    Or simply './findTTYUSB.sh'
 ```

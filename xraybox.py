@@ -11,6 +11,7 @@ import inspect
 import serial
 import time
 import struct
+import multiprocessing
 
 readline.parse_and_bind('tab: complete')
 readline.parse_and_bind('set editing-mode vi')
@@ -389,10 +390,7 @@ class Xraybox:
     def resetAll(self):
         """resetAll"""
         self._send(self._interpret(modeID=17)) # stop measurement
-
-    def external(self, *iCmd):
-        """Call shell command by \'external your-shell-command-with-arguments\'"""
-        subprocess.call(' '.join(iCmd), shell=True)
+        return
 
     def _interpret(self, modeID=len(_modeData)-1, data=0, devID=len(_deviceParaData)-1):
         """Intepret command to bytes"""
@@ -416,6 +414,7 @@ class Xraybox:
         for i in range(len(command)):
             self._usbserial.write(struct.pack("B",command[i]))
         time.sleep(self.commtime)
+        return
 
     def _read(self, length=-1):
         """Read value via usb, length of output is detected automatically"""
@@ -438,12 +437,14 @@ class Xraybox:
             else:
                 print """ERROR\t\t: Something wrong in reading values.""", oBytes
                 self.previousStepStatus = 1;
+                return
 
     def _getDevStatus(self, iDevID):
         self._send(self._interpret(modeID=4,devID=iDevID))
         iStatus = self._read()
         if iStatus[5] == format(self._deviceParaData[iDevID][1],'#04x') :
             return iStatus[6:-1][::-1] #Make slice, and reverse bytes
+        return
 
     def _isCmdOk(self,message):
         cmdResult = [ int(i,16) for i in self._read() ]
@@ -463,19 +464,29 @@ class Xraybox:
 ### CLI
 def main():
     xmethods = [f for f in dir(Xraybox) if not f.startswith('_')]
+    xmethods.extend(('external','parallel'))
     xmethods.extend(('help','quit'))
+
+    pWorkers = [] # Keep track with all subprocess
 
     if len(sys.argv) == 1 :
         # Interactive mode
         print """Control X-ray box in interactive mode. Get help by 'help' method."""
 
         # Extend special methods for interactive mode
-        xmethods.extend(('createSampleScript'))
+        xmethods.extend(('createSampleScript',))
 
         ### Initialize the box.
-        iPort = raw_input('Please input the location of ttyUSB (empty=/dev/ttyUSB0): ')
+        iPort = raw_input('Please input the location of ttyUSB (empty=auto-detect, ?=list): ')
+        while iPort == '?':
+            print "Here's the list of FTDI devices."
+            subprocess.call('./findTTYUSB.sh')
+            iPort = raw_input('Please input the location of ttyUSB (empty=auto-detect, ?=list): ')
+
         if iPort == '':
-            iPort = '/dev/ttyUSB0'
+            iPort = subprocess.check_output('./findTTYUSB.sh | grep PHYWE_X-Ray_09057.99 | awk \'{printf("%s",$1)}\'', shell=True)
+            print """auto-detected port={0}""".format(iPort)
+
         xr40 = Xraybox(iPort)
 
         while True:
@@ -494,28 +505,48 @@ def main():
 setLight 1
 external echo "Trun on light for 10 sec";sleep 10
 setLight 0
+
+#Start subprocess by 'parallel' method.
+#Use 'wait' argument to hold until all subprocess are finished.
+parallel sleep 10; echo "Process-1"
+parallel sleep 3; echo "Process-2"
+parallel wait
+external echo "Should wait 10 seconds"
+
+parallel sleep 5; echo "Process-3"
+parallel sleep 15; echo "Process-4"
+parallel wait
+external echo "Should wait another 15 seconds"
 quit\
 """
                 fout.write(sampleScriptContent)
                 fout.close()
                 print """Done! 'sampleScript' is produced."""
             elif cmd[0] in xmethods:
-                if len(cmd) == 1:
+                if cmd[0] in ['external']:
+                    external(*cmd[1:])
+                elif cmd[0] in ['parallel']:
+                    if len(cmd) == 1:
+                        print getattr(createParallel,"__doc__")
+                    elif cmd[1] in ['wait']:
+                        for iWorker in pWorkers:
+                            iWorker.join()
+                    else:
+                        pWorkers.append(createParallel(cmd))
+                elif len(cmd) == 1:
                     if getattr(xr40,cmd[0]).__doc__ != None:
                         print getattr(xr40,cmd[0]).__doc__
                     if len(inspect.getargspec(getattr(xr40,cmd[0]))[0]) == 1:
                         output=getattr(xr40,cmd[0])()
                         if output != None:
                             print output
-                elif cmd[0] in ['external']:
-                    getattr(xr40,cmd[0])(*cmd[1:])
                 else:
                     getattr(xr40,cmd[0])(*[int(x) for x in cmd[1:]])
             else:
                 print """INFO\t\t: Unknown method:\"{0}\". Get help by 'help' method.""".format(' '.join(cmd))
 
     elif sys.argv[1] == '--help' or sys.argv[1] == '-h':
-        printHelp()
+        printHelp(xmethods)
     elif len(sys.argv) == 2:
         ### Script mode
         if os.path.exists(sys.argv[1]):
@@ -525,14 +556,17 @@ quit\
             firstline = f.readline().rstrip('\n')
             if firstline.startswith('/'):
                 xr40 = Xraybox(firstline)
+                print """User-defined port for XR40 is {0}""".format(firstline)
             else:
-                xr40 = Xraybox()
-            f.seek(0)
+                iPort = subprocess.check_output('./findTTYUSB.sh | grep PHYWE_X-Ray_09057.99 | awk \'{printf("%s",$1)}\'', shell=True)
+                print """Auto-detected port for XR40 is {0}""".format(iPort)
+                xr40 = Xraybox(iPort)
+                f.seek(0)
 
             # Run line-by-line, skip blank line/unknown method/lines begin with #
             for thisline in f.readlines():
                 cmd = thisline.lstrip().rstrip('\n')
-                if cmd == '' or cmd.startswith('#') or cmd == firstline:
+                if cmd == '' or cmd.startswith('#'):
                     continue
 
                 print """Processing\t: {0}""".format(cmd)
@@ -540,13 +574,21 @@ quit\
                 if cmd[0] == 'quit':
                     break
                 elif cmd[0] in xmethods:
-                    if len(cmd) == 1:
+                    if cmd[0] in ['external']:
+                        external(*cmd[1:])
+                    elif cmd[0] in ['parallel']:
+                        if len(cmd) == 1:
+                            print getattr(createParallel,"__doc__")
+                        elif cmd[1] in ['wait']:
+                            for iWorker in pWorkers:
+                                iWorker.join()
+                        else:
+                            pWorkers.append(createParallel(cmd))
+                    elif len(cmd) == 1:
                         if len(inspect.getargspec(getattr(xr40,cmd[0]))[0]) == 1:
                             output=getattr(xr40,cmd[0])()
                             if output != None:
                                 print output
-                    elif cmd[0] in ['external']:
-                        getattr(xr40,cmd[0])(*cmd[1:])
                     else:
                         getattr(xr40,cmd[0])(*[int(x) for x in cmd[1:]])
                 else:
@@ -560,6 +602,23 @@ quit\
             print """File {0} not found!""".format(sys.argv[1])
     else:
         printHelp(xmethods)
+
+def external(*iCmd):
+    """Call shell command by \'external your-shell-command-with-arguments\'"""
+    if len(iCmd) == 0:
+        print external.__doc__
+    else:
+        subprocess.call(' '.join(iCmd), shell=True)
+    return
+
+def createParallel(cmd):
+    """\
+Create subprocess by \'parallel your-shell-command with-arguments\'
+Use \'parallel wait\' to hold until all subprocess are done.\
+"""
+    parallelw = multiprocessing.Process(name=' '.join(cmd), target=external, args=cmd[1:])
+    parallelw.start()
+    return parallelw
 
 def printHelp(methodlist):
     print """\

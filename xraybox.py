@@ -389,7 +389,20 @@ class Xraybox:
 
     def resetAll(self):
         """resetAll"""
-        self._send(self._interpret(modeID=17)) # stop measurement
+        #self._send(self._interpret(modeID=17)) # stop measurement
+        self.setXray(0)
+        time.sleep(1)
+        self.setGonio(0, 0, 1, 1, 3)
+        time.sleep(1)
+        self.startRun(1)
+        time.sleep(3)
+        self.setGonio(0, 0, 1, 2, 3)
+        time.sleep(1)
+        self.startRun(1)
+        time.sleep(3)
+        self.setLight(0)
+        time.sleep(1)
+        print """INFO\t\t: X-ray box is reset. :-)"""
         return
 
     def _interpret(self, modeID=len(_modeData)-1, data=0, devID=len(_deviceParaData)-1):

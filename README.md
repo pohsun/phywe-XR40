@@ -1,7 +1,6 @@
 # SOP for X-ray tests
 
-Editor: Yu-Wei Kao, Po-Hsun Chen
-Email: ykao@cern.ch, pchen@cern.ch
+Contact: [Yu-Wei Kao, Po-Hsun Chen](mailto:ykao@cern.ch,pchen@cern.ch)
 
 # Setup the hardware
 

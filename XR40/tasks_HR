@@ -1,0 +1,128 @@
+#
+
+external echo "\n\t!!! Please make sure door is locked and control panel is at monitoring stage. !!! \n"
+external echo "\n\t!!! ---------------------------------------------------------- \n"
+external echo "\n\t!!! Have you masked out the noisy pixels? !!! \n"
+external echo "\n \n"
+external sleep 3
+
+setCurrent 10
+setGonio 900 900 1 1 3
+external sleep 3
+startRun 1
+
+# steps for pixelAlive test
+external sleep 3
+external mv ~/pxar/data//defaultMaskFile.dat ~/pxar/data//defaultMaskFile.dat.old
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t PixelAlive
+parallel wait
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_PixelAlive.root
+external mv ~/pxar/data//pxar.log ~/pxar/data//pxar_PixelAlive.log
+external sleep 5 
+
+# steps for re-trim test
+setCurrent 50
+setXray 1
+external sleep 10
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t HighRate:trimhotpixels -p "trimhotpixelthr=200;runsecondshotpixels=1;savetrimbits=1;maskuntrimmable=1" -v DEBUG
+parallel wait
+setXray 0
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_HR_retrim_50.root
+external mv ~/pxar/data//pxar.log  ~/pxar/data//pxar_HR_retrim_50.log
+#external vim ~/pxar/data//defaultMaskFile.dat
+external sleep 3
+
+setCurrent 0
+setXray 0
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t HighRate:trimhotpixels -p "trimhotpixelthr=10;runsecondshotpixels=5;savetrimbits=1;maskuntrimmable=1" -v DEBUG
+parallel wait
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_HR_retrim_0.root
+external mv ~/pxar/data//pxar.log  ~/pxar/data//pxar_HR_retrim_0.log
+#external vim ~/pxar/data//defaultMaskFile.dat
+external sleep 3
+
+
+# steps for takin HR hitmap
+setCurrent 50
+setXray 1
+external sleep 10
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t Xray:phrun -p "source=Ag;runseconds=100"
+parallel wait
+setXray 0
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_HR_Ag_current_50.root
+external mv ~/pxar/data//pxar.log  ~/pxar/data//pxar_HR_Ag_current_50.log
+external root.exe ~/pxar/macros/Draw_module_map.C\(\"~/pxar/data//pxar_HR_Ag_current_50.root\",\"Xray\",\"Ag\",0\)
+external sleep 3
+
+setCurrent 20
+setXray 1
+external sleep 10
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t Xray:phrun -p "source=Ag;runseconds=100"
+parallel wait
+setXray 0
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_HR_Ag_current_20.root
+external mv ~/pxar/data//pxar.log  ~/pxar/data//pxar_HR_Ag_current_20.log
+external root.exe ~/pxar/macros/Draw_module_map.C\(\"~/pxar/data//pxar_HR_Ag_current_20.root\",\"Xray\",\"Ag\",0\)
+external sleep 3
+
+
+# steps for taking HR data
+setCurrent 10
+setXray 1
+external sleep 10
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t HighRate:xnoisemaps -p "ntrig=25" -v DEBUG
+parallel wait
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_HR_scurve.root
+external mv ~/pxar/data//pxar.log  ~/pxar/data//pxar_HR_scurve.log
+external mkdir ~/pxar/data//XSCurveData_current_10
+external mv ~/pxar/data//XSCurve*.dat  ~/pxar/data//XSCurveData_current_10
+external sleep 3
+parallel cat HighRate_tests_low_flux | ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -p "triggerdelay=10;trgfrequency(khz)=30;ntrig=50" -v DEBUG
+parallel wait
+setXray 0
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_HR_current_10.root
+external mv ~/pxar/data//pxar.log  ~/pxar/data//pxar_HR_current_10.log
+external sleep 3
+
+setCurrent 20
+setXray 1
+external sleep 10
+parallel cat HighRate_tests | ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -p "triggerdelay=10;trgfrequency(khz)=30;ntrig=50" -v DEBUG
+parallel wait
+setXray 0
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_HR_current_20.root
+external mv ~/pxar/data//pxar.log  ~/pxar/data//pxar_HR_current_20.log
+external sleep 3
+
+setCurrent 30
+setXray 1
+external sleep 10
+parallel cat HighRate_tests | ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -p "triggerdelay=10;trgfrequency(khz)=30;ntrig=50" -v DEBUG
+parallel wait
+setXray 0
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_HR_current_30.root
+external mv ~/pxar/data//pxar.log  ~/pxar/data//pxar_HR_current_30.log
+external sleep 3
+
+setCurrent 40
+setXray 1
+external sleep 10
+parallel cat HighRate_tests | ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -p "triggerdelay=40;trgfrequency(khz)=30;ntrig=50" -v DEBUG
+parallel wait
+setXray 0
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_HR_current_40.root
+external mv ~/pxar/data//pxar.log  ~/pxar/data//pxar_HR_current_40.log
+external sleep 3
+
+setCurrent 50
+setXray 1
+external sleep 10
+parallel cat HighRate_tests | ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -p "triggerdelay=40;trgfrequency(khz)=30;ntrig=50" -v DEBUG
+parallel wait
+setXray 0
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_HR_current_50.root
+external mv ~/pxar/data//pxar.log  ~/pxar/data//pxar_HR_current_50.log
+external sleep 3
+
+resetAll
+

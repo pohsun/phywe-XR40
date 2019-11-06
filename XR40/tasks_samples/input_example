@@ -1,0 +1,14 @@
+/dev/ttyUSB0
+
+external echo "\n\t!!! Please make sure door is locked and control panel is at monitor page. !!! \n"
+
+setLight 1
+#setMeasurement 2 600 900 1800 100 10 
+#startRun 1
+setXray 1
+external sleep 3
+#external echo "Take a nap"; sleep 15; echo "Wake up!"
+setXray 0
+external sleep 3
+setLight 0
+quit

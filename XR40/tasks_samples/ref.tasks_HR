@@ -1,0 +1,119 @@
+#/dev/ttyUSB0
+
+external echo "\n\t!!! Please make sure door is locked and control panel is at monitoring stage. !!! \n"
+external echo "\n\t!!! ---------------------------------------------------------- \n"
+external echo "\n\t!!! Have you masked out the noisy pixels? !!! \n"
+external echo "\n \n"
+external sleep 3
+
+setCurrent 10
+setGonio 900 900 1 1 3
+external sleep 3
+startRun 1
+
+## steps for re-trim test
+#setCurrent 50
+#setXray 1
+#external sleep 10
+#parallel ~/pxar/bin/pXar -d ~/pxar/data/M3040 -T 35 -t highrate:trimhotpixels -p "trimhotpixelthr=900;runsecondsHotPixels=1;savetrimbits=1;maskuntrimmable=1" -v DEBUG
+#parallel ~/pxar/bin/pXar -d ~/pxar/data/M3042 -T 35 -t highrate:trimhotpixels -p "trimhotpixelthr=900;runsecondsHotPixels=1;savetrimbits=1;maskuntrimmable=1" -v DEBUG
+#parallel wait
+#setXray 0
+#external mkdir ~/pxar/data/M3040/retrim_240
+#external mkdir ~/pxar/data/M3042/retrim_240
+#external mv ~/pxar/data/M3040/pxar.root ~/pxar/data/M3040/retrim_240/pxar_HR_retrim.root
+#external mv ~/pxar/data/M3042/pxar.root ~/pxar/data/M3042/retrim_240/pxar_HR_retrim.root
+#external mv ~/pxar/data/M3040/pxar.log  ~/pxar/data/M3040/retrim_240/pxar_HR_retrim.log
+#external mv ~/pxar/data/M3042/pxar.log  ~/pxar/data/M3042/retrim_240/pxar_HR_retrim.log
+#external cp ~/pxar/data/M3040/defaultMaskFile.dat ~/pxar/data/M3040/retrim_240
+#external cp ~/pxar/data/M3042/defaultMaskFile.dat ~/pxar/data/M3042/retrim_240
+#external cp ~/pxar/data/M3040/trimParameters35_C*.dat ~/pxar/data/M3040/retrim_240
+#external cp ~/pxar/data/M3042/trimParameters35_C*.dat ~/pxar/data/M3042/retrim_240
+#external vim ~/pxar/data/M3040/defaultMaskFile.dat
+#external vim ~/pxar/data/M3042/defaultMaskFile.dat
+#external sleep 3
+
+# steps for takin HR hitmap
+setCurrent 20
+setXray 1
+external sleep 10
+parallel ~/pxar/bin/pXar -d ~/pxar/data/M3040 -T 35 -t Xray:phrun -p "source=Ag;runseconds=100"
+parallel ~/pxar/bin/pXar -d ~/pxar/data/M3042 -T 35 -t Xray:phrun -p "source=Ag;runseconds=100"
+parallel wait
+setXray 0
+external mv ~/pxar/data/M3040/pxar.root ~/pxar/data/M3040/retrim_240/pxar_HR_Ag_current_20.root
+external mv ~/pxar/data/M3042/pxar.root ~/pxar/data/M3042/retrim_240/pxar_HR_Ag_current_20.root
+external mv ~/pxar/data/M3040/pxar.log  ~/pxar/data/M3040/retrim_240/pxar_HR_Ag_current_20.log
+external mv ~/pxar/data/M3042/pxar.log  ~/pxar/data/M3042/retrim_240/pxar_HR_Ag_current_20.log
+external root ~/pxar/macros/Draw_module_map.C\(\"~/pxar/data/M3040/retrim_240/pxar_HR_Ag_current_20.root\",\"Xray\",\"Ag\",0\)
+external root ~/pxar/macros/Draw_module_map.C\(\"~/pxar/data/M3042/retrim_240/pxar_HR_Ag_current_20.root\",\"Xray\",\"Ag\",0\)
+external sleep 3
+
+setCurrent 50
+setXray 1
+external sleep 10
+parallel ~/pxar/bin/pXar -d ~/pxar/data/M3040 -T 35 -t Xray:phrun -p "source=Ag;runseconds=100"
+parallel ~/pxar/bin/pXar -d ~/pxar/data/M3042 -T 35 -t Xray:phrun -p "source=Ag;runseconds=100"
+parallel wait
+setXray 0
+external mv ~/pxar/data/M3040/pxar.root ~/pxar/data/M3040/retrim_240/pxar_HR_Ag_current_50.root
+external mv ~/pxar/data/M3042/pxar.root ~/pxar/data/M3042/retrim_240/pxar_HR_Ag_current_50.root
+external mv ~/pxar/data/M3040/pxar.log  ~/pxar/data/M3040/retrim_240/pxar_HR_Ag_current_50.log
+external mv ~/pxar/data/M3042/pxar.log  ~/pxar/data/M3042/retrim_240/pxar_HR_Ag_current_50.log
+external root ~/pxar/macros/Draw_module_map.C\(\"~/pxar/data/M3040/retrim_240/pxar_HR_Ag_current_50.root\",\"Xray\",\"Ag\",0\)
+external root ~/pxar/macros/Draw_module_map.C\(\"~/pxar/data/M3042/retrim_240/pxar_HR_Ag_current_50.root\",\"Xray\",\"Ag\",0\)
+external sleep 3
+
+# steps for taking HR data
+setCurrent 10
+setXray 1
+external sleep 10
+parallel cat HighRate_tests_low_flux | ~/pxar/bin/pXar -d ~/pxar/data/M3040 -T 35 -p "triggerdelay=10;trgfrequency(khz)=30;ntrig=100" -v DEBUG
+parallel cat HighRate_tests_low_flux | ~/pxar/bin/pXar -d ~/pxar/data/M3042 -T 35 -p "triggerdelay=10;trgfrequency(khz)=30;ntrig=100" -v DEBUG
+parallel wait
+setXray 0
+external mv ~/pxar/data/M3040/pxar.root ~/pxar/data/M3040/retrim_240/pxar_HR_current_10.root
+external mv ~/pxar/data/M3042/pxar.root ~/pxar/data/M3042/retrim_240/pxar_HR_current_10.root
+external mv ~/pxar/data/M3040/pxar.log  ~/pxar/data/M3040/retrim_240/pxar_HR_current_10.log
+external mv ~/pxar/data/M3042/pxar.log  ~/pxar/data/M3042/retrim_240/pxar_HR_current_10.log
+external mkdir ~/pxar/data/M3040/retrim_240/XSCurveData_current_10
+external mkdir ~/pxar/data/M3042/retrim_240/XSCurveData_current_10
+external mv ~/pxar/data/M3040/XSCurve*.dat  ~/pxar/data/M3040/retrim_240/XSCurveData_current_10
+external mv ~/pxar/data/M3042/XSCurve*.dat  ~/pxar/data/M3042/retrim_240/XSCurveData_current_10
+external sleep 3
+
+setCurrent 50
+setXray 1
+external sleep 10
+parallel cat HighRate_tests | ~/pxar/bin/pXar -d ~/pxar/data/M3040 -T 35 -p "triggerdelay=40;trgfrequency(khz)=30;ntrig=100" -v DEBUG
+parallel cat HighRate_tests | ~/pxar/bin/pXar -d ~/pxar/data/M3042 -T 35 -p "triggerdelay=40;trgfrequency(khz)=30;ntrig=100" -v DEBUG
+parallel wait
+setXray 0
+external mv ~/pxar/data/M3040/pxar.root ~/pxar/data/M3040/retrim_240/pxar_HR_current_50.root
+external mv ~/pxar/data/M3042/pxar.root ~/pxar/data/M3042/retrim_240/pxar_HR_current_50.root
+external mv ~/pxar/data/M3040/pxar.log  ~/pxar/data/M3040/retrim_240/pxar_HR_current_50.log
+external mv ~/pxar/data/M3042/pxar.log  ~/pxar/data/M3042/retrim_240/pxar_HR_current_50.log
+external mkdir ~/pxar/data/M3040/retrim_240/XSCurveData_current_50
+external mkdir ~/pxar/data/M3042/retrim_240/XSCurveData_current_50
+external mv ~/pxar/data/M3040/XSCurve*.dat  ~/pxar/data/M3040/retrim_240/XSCurveData_current_50
+external mv ~/pxar/data/M3042/XSCurve*.dat  ~/pxar/data/M3042/retrim_240/XSCurveData_current_50
+external sleep 3
+
+setCurrent 30
+setXray 1
+external sleep 10
+parallel cat HighRate_tests | ~/pxar/bin/pXar -d ~/pxar/data/M3040 -T 35 -p "triggerdelay=10;trgfrequency(khz)=30;ntrig=100" -v DEBUG
+parallel cat HighRate_tests | ~/pxar/bin/pXar -d ~/pxar/data/M3042 -T 35 -p "triggerdelay=10;trgfrequency(khz)=30;ntrig=100" -v DEBUG
+parallel wait
+setXray 0
+external mv ~/pxar/data/M3040/pxar.root ~/pxar/data/M3040/retrim_240/pxar_HR_current_30.root
+external mv ~/pxar/data/M3042/pxar.root ~/pxar/data/M3042/retrim_240/pxar_HR_current_30.root
+external mv ~/pxar/data/M3040/pxar.log  ~/pxar/data/M3040/retrim_240/pxar_HR_current_30.log
+external mv ~/pxar/data/M3042/pxar.log  ~/pxar/data/M3042/retrim_240/pxar_HR_current_30.log
+external mkdir ~/pxar/data/M3040/retrim_240/XSCurveData_current_30
+external mkdir ~/pxar/data/M3042/retrim_240/XSCurveData_current_30
+external mv ~/pxar/data/M3040/XSCurve*.dat  ~/pxar/data/M3040/retrim_240/XSCurveData_current_30
+external mv ~/pxar/data/M3042/XSCurve*.dat  ~/pxar/data/M3042/retrim_240/XSCurveData_current_30
+external sleep 3
+resetAll
+

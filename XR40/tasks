@@ -1,0 +1,85 @@
+# 
+
+external sleep 3
+
+setCurrent 100
+setGonio 0 0 1 1 3
+external sleep 3
+startRun 1
+
+external sleep 3
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t GainPedestal
+parallel wait
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_GainPedestal.root
+external mv ~/pxar/data//pxar.log ~/pxar/data//pxar_GainPedestal.log
+external cp ~/pxar/data//defaultMaskFile.dat ~/pxar/data//defaultMaskFile.dat.old
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t Xray:maskHotPixels -p "savemaskfile=1"
+parallel wait
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_maskHotPixels.root
+external cat ~/pxar/data//defaultMaskFile.dat.old >> ~/pxar/data//defaultMaskFile.dat
+external cat ~/pxar/data//defaultMaskFile.dat | sort -n -k2 -k3 -k4 | uniq | tee ~/pxar/data//defaultMaskFile.dat
+#external vim ~/pxar/data//defaultMaskFile.dat
+external sleep 3
+
+# steps for taking xray data
+setGonio 600 600 1 2 3
+external sleep 3
+startRun 1
+external sleep 3
+setXray 1
+external sleep 5
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t Xray:phrun -p "source=Mo;runseconds=100" #240 #100
+parallel wait
+setXray 0
+parallel mv ~/pxar/data//pxar.root ~/pxar/data//pxar_Mo.root
+parallel mv ~/pxar/data//pxar.log ~/pxar/data//pxar_Mo.log
+external sleep 3
+
+# Draw Xray spectrum and view 
+external root.exe ~/pxar/macros/Draw_module_map.C\(\"~/pxar/data//pxar_Mo.root\",\"Xray\",\"Mo\",0\)
+
+#--------------------------------------------
+setGonio 1500 1500 1 2 3
+external sleep 3
+startRun 1
+external sleep 3
+setXray 1
+external sleep 5
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t Xray:phrun -p "source=Zn;runseconds=100" #240 #100
+parallel wait
+setXray 0
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_Zn.root
+external mv ~/pxar/data//pxar.log ~/pxar/data//pxar_Zn.log
+external sleep 3
+# Draw Xray spectrum and view 
+external root.exe ~/pxar/macros/Draw_module_map.C\(\"~/pxar/data//pxar_Zn.root\",\"Xray\",\"Zn\",0\)
+#--------------------------------------------
+setGonio 2400 2400 1 2 3
+external sleep 3
+startRun 1
+external sleep 3
+setXray 1
+external sleep 5
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t Xray:phrun -p "source=Sn;runseconds=200" #240 #600
+parallel wait
+setXray 0
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_Sn.root
+external mv ~/pxar/data//pxar.log ~/pxar/data//pxar_Sn.log
+external sleep 3
+# Draw Xray spectrum and view 
+external root.exe ~/pxar/macros/Draw_module_map.C\(\"~/pxar/data//pxar_Sn.root\",\"Xray\",\"Sn\",0\)
+#--------------------------------------------
+setGonio 3300 3300 1 2 3
+external sleep 3
+startRun 1
+external sleep 3
+setXray 1
+external sleep 5
+parallel ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t Xray:phrun -p "source=Ag;runseconds=100" #240 #400
+parallel wait
+setXray 0
+external mv ~/pxar/data//pxar.root ~/pxar/data//pxar_Ag.root
+external mv ~/pxar/data//pxar.log ~/pxar/data//pxar_Ag.log
+external sleep 3
+external root.exe ~/pxar/macros/Draw_module_map.C\(\"~/pxar/data//pxar_Ag.root\",\"Xray\",\"Ag\",0\)
+resetAll

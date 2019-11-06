@@ -1,0 +1,7 @@
+/dev/ttyUSB0
+#Put the TTY your device is on at the first line
+#Comments start with '#', empty lines are ignored.
+setLight 1
+external echo "Trun on light for 10 sec";sleep 10
+setLight 0
+quit

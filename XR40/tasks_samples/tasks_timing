@@ -1,0 +1,29 @@
+# 
+
+setGonio 900 900 1 1 3
+external sleep 3
+startRun 1
+external sleep 3
+
+setXray 0
+#parallel cat HighRate_timing | ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -v DEBUG
+external ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t cmd:timing
+external mv /afs/cern.ch/user/y/ykao/work/xray/XR40/pxar_timing.log  ~/pxar/data//pxar_HR_timing_current_0.log
+
+setCurrent 50
+external sleep 3
+setXray 1
+external sleep 10
+#parallel cat HighRate_timing | ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -v DEBUG
+external ~/pxar/bin/pXar -d ~/pxar/data/ -T 35 -t cmd:timing
+external mv /afs/cern.ch/user/y/ykao/work/xray/XR40/pxar_timing.log  ~/pxar/data//pxar_HR_timing_current_50.log
+setXray 0
+
+external grep "selecting" ~/pxar/data//pxar_HR_timing_current_0.log | tail -n 1 | cut -d ' ' -f 2-7 | awk 'NR<6{printf("ibase=10;obase=2;%d\nibase=10;obase=2;%d\nibase=10;obase=2;%d\nibase=10;obase=2;%d\nibase=10;obase=2;%d\nibase=10;obase=2;%d\n0\n0",$5,$4,$3,$3,$1,$2)}' | xargs -L 1| bc | awk 'BEGIN{printf("ibase=2;obase=1010;")}NR>2 && NR<7{printf("%03d",$1)}NR==4{printf("\nibase=2;obase=1010;")}NR<3 || NR>6{printf("%d",$1)}END{printf("\n")}' | xargs -L 1 | bc | awk '{printf("0x%02X\n",$1)}' | awk '{if(NR==1)printf("basea   %s\n",$1)}{if(NR==2)printf("basee   %s\n",$1)}'| tee -a ~/pxar/data//pxar_tbmParameters.log 
+external grep -n "basea" ~/pxar/data//pxar_tbmParameters.log | tail -n1 | awk '{printf("-i \"%di tbmParameters with current=0\" /home/pixel_dev/pxar/data//pxar_tbmParameters.log\n",$1)}'| xargs -n 3 sed
+
+external grep "selecting" ~/pxar/data//pxar_HR_timing_current_50.log | tail -n 1 | cut -d ' ' -f 2-7 | awk 'NR<6{printf("ibase=10;obase=2;%d\nibase=10;obase=2;%d\nibase=10;obase=2;%d\nibase=10;obase=2;%d\nibase=10;obase=2;%d\nibase=10;obase=2;%d\n0\n0",$5,$4,$3,$3,$1,$2)}' | xargs -L 1| bc | awk 'BEGIN{printf("ibase=2;obase=1010;")}NR>2 && NR<7{printf("%03d",$1)}NR==4{printf("\nibase=2;obase=1010;")}NR<3 || NR>6{printf("%d",$1)}END{printf("\n")}' | xargs -L 1 | bc | awk '{printf("0x%02X\n",$1)}'| awk '{if(NR==1)printf("basea   %s\n",$1)}{if(NR==2)printf("basee   %s\n",$1)}'| tee -a ~/pxar/data//pxar_tbmParameters.log 
+external grep -n "basea" ~/pxar/data//pxar_tbmParameters.log | tail -n1 | awk '{printf("-i \"%di tbmParameters with current=50\" /home/pixel_dev/pxar/data//pxar_tbmParameters.log\n",$1)}'| xargs -n 3 sed
+
+external sleep 3
+#resetAll

@@ -1,0 +1,135 @@
+[09:05:35.364]     INFO: *** Welcome to pxar ***
+[09:05:35.364]     INFO: *** Today: 2015/11/05
+[09:05:35.364]     INFO: readRocDacs: data/testDir//dacParameters_C0.dat .. data/testDir//dacParameters_C15.dat
+[09:05:35.365]     INFO: readTbmDacs: data/testDir//tbmParameters_C0a.dat .. data/testDir//tbmParameters_C0b.dat
+[09:05:35.365]     INFO: readMaskFile: data/testDir//defaultMaskFile.dat
+[09:05:35.365]     INFO: readTrimFile: data/testDir//trimParameters_C0.dat .. data/testDir//trimParameters_C15.dat
+[09:05:35.436]     INFO:         clk: 4
+[09:05:35.436]     INFO:         ctr: 4
+[09:05:35.436]     INFO:         sda: 19
+[09:05:35.436]     INFO:         tin: 9
+[09:05:35.436]     INFO:         level: 15
+[09:05:35.436]     INFO:         triggerdelay: 0
+[09:05:35.437]    QUIET: Instanciating API for pxar prod-01+69~g35a931b
+[09:05:35.437]     INFO: Log level: INFO
+[09:05:35.442]     INFO: Connected DTBs:
+[09:05:35.442]     INFO: 0: DTB_WV7PE4 on USB
+[09:05:35.450]     INFO: BID = 100
+[09:05:35.451]     INFO: 1: DTB_WV8A2R on USB
+[09:05:35.464]     INFO: BID = 114
+[09:05:35.465]     INFO: Please choose DTB (0-1): 
+[09:05:36.612]    QUIET: Connection to board DTB_WV8A2R opened.
+[09:05:36.615]     INFO: DTB startup information
+--- DTB info------------------------------------------
+Board id:    114
+HW version:  DTB1.2
+FW version:  4.2
+SW version:  4.2
+USB id:      DTB_WV8A2R
+MAC address: 40D855118072
+Hostname:    pixelDTB114
+Comment:     with CMOS buffer
+------------------------------------------------------
+[09:05:36.618]     INFO: RPC call hashes of host and DTB match: 447413373
+[09:05:38.162]     INFO: DUT info: 
+[09:05:38.162]     INFO: The DUT currently contains the following objects:
+[09:05:38.162]     INFO:  2 TBM Cores tbm08b (2 ON)
+[09:05:38.162]     INFO: 	TBM Core alpha (0): 7 registers set
+[09:05:38.162]     INFO: 	TBM Core beta  (1): 7 registers set
+[09:05:38.162]     INFO: 16 ROCs psi46digv21respin (16 ON) with 4160 pixelConfigs
+[09:05:38.162]     INFO: 	ROC 0: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 1: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 2: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 3: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 4: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 5: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 6: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 7: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 8: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 9: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 10: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 11: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 12: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 13: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 14: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.163]     INFO: 	ROC 15: 19 DACs set, Pixels: 0 masked, 0 active.
+[09:05:38.730]     INFO: readGainPedestalParameters data/testDir//phCalibrationFitErr_C0.dat .. data/testDir//phCalibrationFitErr_C15.dat
+[09:05:38.730]    ERROR: <ConfigParameters.cc/readGainPedestalParameters:L983> cannot open data/testDir//phCalibrationFitErr_C0.dat for reading PH calibration constants
+[09:05:38.748]     INFO: readReadbackCal: data/testDir//readbackCal_C0.dat .. data/testDir//readbackCal_C15.dat
+[09:05:38.748]     INFO: readGainPedestalParameters data/testDir//phCalibrationFitErr_C0.dat .. data/testDir//phCalibrationFitErr_C15.dat
+[09:05:38.748]    ERROR: <ConfigParameters.cc/readGainPedestalParameters:L983> cannot open data/testDir//phCalibrationFitErr_C0.dat for reading PH calibration constants
+[09:05:38.763]     INFO: readGainPedestalParameters data/testDir//phCalibrationFitErr_C0.dat .. data/testDir//phCalibrationFitErr_C15.dat
+[09:05:38.763]    ERROR: <ConfigParameters.cc/readGainPedestalParameters:L983> cannot open data/testDir//phCalibrationFitErr_C0.dat for reading PH calibration constants
+[09:05:41.738]     INFO:    ----------------------------------------------------------------------
+[09:05:41.739]     INFO:    PixTestAlive::aliveTest() ntrig = 10, vcal = 200 (ctrlreg = 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+[09:05:41.739]     INFO:    ----------------------------------------------------------------------
+[09:05:45.542]     INFO: Test took 3801ms.
+[09:05:45.574]     INFO: Fetched DAQ statistics. Counters are being reset now.
+[09:05:45.908]     INFO: PixTestAlive::aliveTest() done
+[09:05:45.908]     INFO: number of dead pixels (per ROC):     0    1    0    0  564    7   55 1233    0    2    5    3    0    0    0    0
+[09:05:49.898]     INFO: ######################################################################
+[09:05:49.898]     INFO: PixTestPretest::doTest()
+[09:05:49.898]     INFO: ######################################################################
+[09:05:49.900]     INFO:    ----------------------------------------------------------------------
+[09:05:49.900]     INFO:    PixTestPretest::programROC() 
+[09:05:49.900]     INFO:    ----------------------------------------------------------------------
+[09:06:07.953]     INFO: PixTestPretest::programROC() done: ROCs are all programmable
+[09:06:07.954]     INFO: IA differences per ROC:  20.9 22.5 20.9 19.3 20.1 20.1 18.5 19.3 18.5 20.1 20.1 18.5 21.7 21.7 20.1 20.1
+[09:06:08.071]     INFO:    ----------------------------------------------------------------------
+[09:06:08.071]     INFO:    PixTestPretest::setVana() target Ia = 24 mA/ROC
+[09:06:08.071]     INFO:    ----------------------------------------------------------------------
+[09:06:27.739]     INFO: PixTestPretest::setVana() done, Module Ia 374.6 mA = 23.4125 mA/ROC
+[09:06:27.796]     INFO:    ----------------------------------------------------------------------
+[09:06:27.796]     INFO:    PixTestPreTest::setTimings()
+[09:06:27.796]     INFO:    ----------------------------------------------------------------------
+[09:06:28.767]     INFO:    ----------------------------------------------------------------------
+[09:06:28.767]     INFO:    Current timings are good. No timing scan needed.
+[09:06:28.767]     INFO:    ----------------------------------------------------------------------
+[09:06:28.767]     INFO: Test took 972 ms.
+[09:06:28.767]     INFO: PixTestPretest::setTimings() done.
+[09:06:28.959]     INFO:    ----------------------------------------------------------------------
+[09:06:28.959]     INFO:    PixTestPretest::findWorkingPixel()
+[09:06:28.959]     INFO:    ----------------------------------------------------------------------
+[09:06:36.480]     INFO: Test took 7518ms.
+[09:06:38.783]     INFO: Found working pixel in all ROCs: col/row = 12/22
+[09:06:38.966]     INFO:    ----------------------------------------------------------------------
+[09:06:38.966]     INFO:    PixTestPretest::setVthrCompCalDel()
+[09:06:38.966]     INFO:    ----------------------------------------------------------------------
+[09:06:46.500]     INFO: Test took 7526ms.
+[09:06:47.868]     INFO: PixTestPretest::setVthrCompCalDel() done
+[09:06:47.868]     INFO: CalDel:      126   111   112   130   100   123   108   109   123   137   124   129   117   143   128   137
+[09:06:47.868]     INFO: VthrComp:     51    51    51    51    51    51    51    51    51    51    51    51    51    51    51    51
+[09:06:47.957]     INFO: write dac parameters into data/testDir//dacParameters_C0.dat
+[09:06:47.958]     INFO: write dac parameters into data/testDir//dacParameters_C1.dat
+[09:06:47.958]     INFO: write dac parameters into data/testDir//dacParameters_C2.dat
+[09:06:47.958]     INFO: write dac parameters into data/testDir//dacParameters_C3.dat
+[09:06:47.958]     INFO: write dac parameters into data/testDir//dacParameters_C4.dat
+[09:06:47.958]     INFO: write dac parameters into data/testDir//dacParameters_C5.dat
+[09:06:47.959]     INFO: write dac parameters into data/testDir//dacParameters_C6.dat
+[09:06:47.959]     INFO: write dac parameters into data/testDir//dacParameters_C7.dat
+[09:06:47.959]     INFO: write dac parameters into data/testDir//dacParameters_C8.dat
+[09:06:47.959]     INFO: write dac parameters into data/testDir//dacParameters_C9.dat
+[09:06:47.959]     INFO: write dac parameters into data/testDir//dacParameters_C10.dat
+[09:06:47.960]     INFO: write dac parameters into data/testDir//dacParameters_C11.dat
+[09:06:47.960]     INFO: write dac parameters into data/testDir//dacParameters_C12.dat
+[09:06:47.960]     INFO: write dac parameters into data/testDir//dacParameters_C13.dat
+[09:06:47.960]     INFO: write dac parameters into data/testDir//dacParameters_C14.dat
+[09:06:47.960]     INFO: write dac parameters into data/testDir//dacParameters_C15.dat
+[09:06:47.960]     INFO: write tbm parameters into data/testDir//tbmParameters_C0a.dat
+[09:06:47.961]     INFO: write tbm parameters into data/testDir//tbmParameters_C0b.dat
+[09:06:47.961]     INFO: PixTestPretest::doTest() done, duration: 58 seconds
+[09:06:51.493]     INFO:    ----------------------------------------------------------------------
+[09:06:51.493]     INFO:    PixTestAlive::aliveTest() ntrig = 10, vcal = 200 (ctrlreg = 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+[09:06:51.493]     INFO:    ----------------------------------------------------------------------
+[09:06:55.315]     INFO: Test took 3820ms.
+[09:06:55.341]     INFO: Fetched DAQ statistics. Counters are being reset now.
+[09:06:55.646]     INFO: PixTestAlive::aliveTest() done
+[09:06:55.646]     INFO: number of dead pixels (per ROC):     0    1    0    0    7    6   54   20    0    2    5    3    0    0    0    0
+[09:07:12.618]     INFO:    ----------------------------------------------------------------------
+[09:07:12.618]     INFO:    PixTestAlive::aliveTest() ntrig = 10, vcal = 200 (ctrlreg = 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0)
+[09:07:12.618]     INFO:    ----------------------------------------------------------------------
+[09:07:16.439]     INFO: Test took 3817ms.
+[09:07:16.463]     INFO: Fetched DAQ statistics. Counters are being reset now.
+[09:07:16.758]     INFO: PixTestAlive::aliveTest() done
+[09:07:16.758]     INFO: number of dead pixels (per ROC):     0    1    0    0    8    6   54   20    0    2    5    3    0    0    0    0
+[09:07:25.575]    QUIET: Connection to board 114 closed.

@@ -1,0 +1,48 @@
+[18:00:38.818]     INFO: *** Welcome to pxar ***
+[18:00:38.818]     INFO: *** Today: 2016/01/25
+[18:00:38.818]     INFO: readRocDacs: data/testDir//dacParameters_C0.dat .. data/testDir//dacParameters_C15.dat
+[18:00:38.842]     INFO: readTbmDacs: data/testDir//tbmParameters_C0a.dat .. data/testDir//tbmParameters_C0b.dat
+[18:00:38.842]     INFO: readMaskFile: data/testDir//defaultMaskFile.dat
+[18:00:38.866]     INFO: readTrimFile: data/testDir//trimParameters_C0.dat .. data/testDir//trimParameters_C15.dat
+[18:00:38.975]     INFO:         clk: 4
+[18:00:38.975]     INFO:         ctr: 4
+[18:00:38.975]     INFO:         sda: 19
+[18:00:38.975]     INFO:         tin: 9
+[18:00:38.975]     INFO:         level: 15
+[18:00:38.975]     INFO:         triggerdelay: 0
+[18:00:38.975]    QUIET: Instanciating API for pxar prod-01+69~g35a931b
+[18:00:38.975]     INFO: Log level: INFO
+[18:00:38.992]    QUIET: Connection to board DTB_WV5GQ7 opened.
+[18:00:38.996]     INFO: DTB startup information
+--- DTB info------------------------------------------
+Board id:    93
+HW version:  DTB1.2
+FW version:  3.2
+SW version:  3.6
+USB id:      DTB_WV5GQ7
+MAC address: 40D85511805D
+Hostname:    pixelDTB093
+Comment:     with CMOS buffer
+------------------------------------------------------
+[18:00:38.998]  WARNING: RPC Call hashes of DTB and Host do not match!
+[18:00:39.026]    ERROR: <rpc_calls.h/RpcLink:L74> Missing DTB functions:
+[18:00:39.026]    ERROR: <rpc_calls.h/RpcLink:L78> void Trigger_Select(uint16_t);
+[18:00:39.027]    ERROR: <rpc_calls.h/RpcLink:L78> void Trigger_Delay(uint8_t);
+[18:00:39.027]    ERROR: <rpc_calls.h/RpcLink:L78> void Trigger_Timeout(uint16_t);
+[18:00:39.028]    ERROR: <rpc_calls.h/RpcLink:L78> void Trigger_SetGenPeriodic(uint32_t);
+[18:00:39.029]    ERROR: <rpc_calls.h/RpcLink:L78> void Trigger_SetGenRandom(uint32_t);
+[18:00:39.029]    ERROR: <rpc_calls.h/RpcLink:L78> void Trigger_Send(uint8_t);
+[18:00:39.071] CRITICAL: <hal.cc/CheckCompatibility:L381> Please update your DTB with the correct flash file.
+[18:00:39.071] CRITICAL: <hal.cc/CheckCompatibility:L382> Get Firmware v4.2 from https://github.com/psi46/pixel-dtb-firmware/tree/master/FLASH
+[18:00:39.072]    ERROR: <hal.cc/status:L105> Testboard not initialized yet!
+[18:00:39.072]    ERROR: <hal.cc/status:L105> Testboard not initialized yet!
+[18:00:39.072]    ERROR: <hal.cc/status:L105> Testboard not initialized yet!
+[18:00:39.072]    ERROR: <hal.cc/status:L105> Testboard not initialized yet!
+[18:00:39.072]    ERROR: <hal.cc/status:L105> Testboard not initialized yet!
+[18:00:39.072]     INFO: DUT info: 
+[18:00:39.072]    ERROR: <dut.cc/status:L598> DUT structure not initialized/programmed yet!
+[18:00:39.473]     INFO: enter 'restricted' command line mode
+[18:00:39.473]     INFO: enter test to run
+[18:00:52.367]     INFO:   test: exit no parameter change
+[18:00:52.410]    QUIET: Connection to board 93 closed.
+[18:00:52.412]     INFO: pXar: this is the end, my friend
